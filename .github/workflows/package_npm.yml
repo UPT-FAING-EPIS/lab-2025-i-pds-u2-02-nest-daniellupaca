@@ -24,9 +24,9 @@ jobs:
         run: |
           cd notifications
           npm ci
-      - name: Install dependencies (notifications)
+      - name: Install dependencies (customer-app)
         run: |
-          cd notifications
+          cd ../customer-app
           npm ci
 
       - name: Run tests with coverage
