@@ -21,17 +21,20 @@ jobs:
           registry-url: 'https://npm.pkg.github.com/'
 
       - name: Install dependencies (notifications)
-        run: |
-          cd notifications
-          npm ci
-          
-      - name: Install dependencies (customer-app)
-        run: |
-          cd ../customer-app
-          npm ci
+        run: npm ci
+        working-directory: ./notifications
 
-      - name: Run tests with coverage
+      - name: Install dependencies (customer-app)
+        run: npm ci
+        working-directory: ./customer-app
+
+      - name: Run tests (notifications)
         run: npm run test:cov
+        working-directory: ./notifications
+
+      - name: Run tests (customer-app)
+        run: npm run test:cov
+        working-directory: ./customer-app
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -43,26 +46,24 @@ jobs:
 
       - name: Pack notifications_lupaca
         run: |
-          cd notifications
-          npm version patch
+          npm version patch --no-git-tag-version
           npm pack
+        working-directory: ./notifications
 
       - name: Pack customer-app_lupaca
         run: |
-          cd ../customer-app
-          npm version patch
+          npm version patch --no-git-tag-version
           npm pack
+        working-directory: ./customer-app
 
       - name: Publish notifications_lupaca to GitHub Packages
-        run: |
-          cd ../notifications
-          npm publish --access public
+        run: npm publish --access public
+        working-directory: ./notifications
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish customer-app_lupaca to GitHub Packages
-        run: |
-          cd ../customer-app
-          npm publish --access public
+        run: npm publish --access public
+        working-directory: ./customer-app
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
